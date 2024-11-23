@@ -1,0 +1,94 @@
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+}
+th {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+tr {
+    border-bottom: 1px solid #ddd;
+}
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Button Styling */
+.button {
+    margin: 5px;
+    padding: 10px 15px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 14px;
+}
+
+.button.served {
+    background-color: #4caf50; /* Muted green */
+}
+
+.button.canceled {
+    background-color: #f44336; /* Muted red */
+}
+
+.button:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    table, th, td {
+        display: block;
+        width: 100%;
+    }
+    th, td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+    th::before, td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: calc(50% - 20px);
+        text-align: left;
+    }
+    th, td {
+        border-bottom: none;
+        border-right: 1px solid #ddd;
+    }
+    tr {
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 15px;
+    }
+    tr:hover {
+        background-color: inherit;
+    }
+}
+
+/* Center Align Header */
+h1 {
+    text-align: center;
+    font-size: 2.5em;
+    margin: 20px 0;
+    color: #333;
+}

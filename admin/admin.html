@@ -4,20 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Orders</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="admin.css">
 </head>
 <body>
     <h1>Orders</h1>
@@ -26,10 +13,12 @@
             <tr>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Phone</th>
                 <th>Arrival Time</th>
                 <th>Items</th>
                 <th>Total Price</th>
                 <th>Order Date</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody id="ordersTableBody">
@@ -53,10 +42,15 @@
                     row.innerHTML = `
                         <td>${order.name}</td>
                         <td>${order.email}</td>
+                        <td>${order.phone}</td>
                         <td>${new Date(order.arrivalTime).toLocaleString()}</td>
                         <td>${order.items.map(item => `${item.name} (x${item.quantity})`).join(', ')}</td>
                         <td>₹${order.totalPrice.toFixed(2)}</td>
                         <td>${new Date(order.createdAt).toLocaleString()}</td>
+                        <td>
+                            <button class="button served" onclick="markOrder('${order.id}', 'served')">Order Served</button>
+                            <button class="button canceled" onclick="markOrder('${order.id}', 'canceled')">Order Canceled</button>
+                        </td>
                     `;
                     
                     tableBody.appendChild(row);
@@ -68,6 +62,28 @@
 
         // Load orders when the page is loaded
         window.onload = fetchOrders;
+
+        // Function to mark order as served or canceled
+        async function markOrder(orderId, status) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                if (response.ok) {
+                    alert(`Order has been marked as ${status}`);
+                    fetchOrders(); // Reload orders to reflect the changes
+                } else {
+                    alert('Failed to update order status');
+                }
+            } catch (error) {
+                console.error(`Error marking order as ${status}:`, error);
+            }
+        }
     </script>
 </body>
 </html>

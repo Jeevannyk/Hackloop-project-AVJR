@@ -3,121 +3,121 @@
         "name": "Grilled Chicken",
         "description": "Delicious grilled chicken with spices",
         "price": 119,
-        "image": "/foodimages/dish1.png"
+        "image": "foodimages/dish1.png"
     },
     {
         "name": "Veggie Pizza",
         "description": "Fresh vegetables on a crispy crust",
         "price": 109,
-        "image": "/foodimages/dish2.png"
+        "image": "foodimages/dish2.png"
     },
     {
         "name": "Paneer Parota",
         "description": "Flaky paratha stuffed with paneer.",
         "price": 99,
-        "image": "/foodimages/dish3.png"
+        "image": "foodimages/dish3.png"
     },
     {
         "name": "Butter Chicken",
         "description": "Creamy butter chicken with rich gravy.",
         "price": 169,
-        "image": "/foodimages/dish4.png"
+        "image": "foodimages/dish4.png"
     },
     {
         "name": "Veg Pulav",
         "description": "Aromatic veg pulao with tender vegetables.",
         "price": 49,
-        "image": "/foodimages/dish5.png"
+        "image": "foodimages/dish5.png"
     },
     {
         "name": "Chicken Biriyani",
         "description": "Aromatic rice with tender chicken.",
         "price": 69,
-        "image": "/foodimages/dish6.png"
+        "image": "foodimages/dish6.png"
     },   
     {
         "name": "Chicken noodles",
         "description": "Savory noodles with chicken,flavorful broth.",
         "price": 79,
-        "image": "/foodimages/dish7.png"
+        "image": "foodimages/dish7.png"
     } ,
     {
         "name": "Egg Fried Rice",
         "description": "With scrambled eggs and vegetables.",
         "price": 59,
-        "image": "/foodimages/dish8.png"
+        "image": "foodimages/dish8.png"
     }, 
     {
         "name": "Chicken fried rice",
         "description": "with vegetables and a savory sauce",
         "price": 79,
-        "image": "/foodimages/dish9.png"
+        "image": "foodimages/dish9.png"
     },
     {
         "name": "Maggi",
         "description": "Instant noodles with a flavorful broth.",
         "price": 19,
-        "image": "/foodimages/dish10.png"
+        "image": "foodimages/dish10.png"
     },
     {
         "name": "Masala Dosa",
         "description": "Crispy dosa with flavorful potato filling.",
         "price": 49,
-        "image": "/foodimages/dish11.png"
+        "image": "foodimages/dish11.png"
     },
     {
         "name": "Plain Dosa",
         "description": "Crispy crepe made from fermented batter.",
         "price": 29,
-        "image": "/foodimages/dish12.png"
+        "image": "foodimages/dish12.png"
     },
     {
         "name": "Chapathi",
         "description": "Flatbread made from whole wheat flour.",
         "price": 39,
-        "image": "/foodimages/dish13.png"
+        "image": "foodimages/dish13.png"
     },
     {
         "name": "Gobi Manchurian",
         "description": "Flavorful cauliflower dish with Manchurian sauce.",
         "price": 39,
-        "image": "/foodimages/dish14.png"
+        "image": "foodimages/dish14.png"
     },
     {
         "name": "Ghee Rice",
         "description": "Flavorful ghee rice with aromatic spices.",
         "price": 69,
-        "image": "/foodimages/dish15.png"
+        "image": "foodimages/dish15.png"
     },
     {
         "name": "Jeera Rice",
         "description": "Delicious jeera rice with cumin seeds.",
         "price": 59,
-        "image": "/foodimages/dish16.png"
+        "image": "foodimages/dish16.png"
     },
     {
         "name": "Vada Pav",
         "description": "Crispy vada in a soft pav bun.",
         "price": 19,
-        "image": "/foodimages/dish17.png"
+        "image": "foodimages/dish17.png"
     },
     {
         "name": "Pav Bhaji",
         "description": "Mashed veg bhaji with soft pav buns.",
         "price": 49,
-        "image": "/foodimages/dish18.png"
+        "image": "foodimages/dish18.png"
     },
     {
         "name": "Samosa",
         "description": "Crispy pastry filled with savory potato and peas.",
         "price": 19,
-        "image": "/foodimages/dish19.png"
+        "image": "foodimages/dish19.png"
     },
     {
         "name": "Paneer Tikka",
         "description": "Marinated paneer cubes grilled.",
         "price": 189,
-        "image": "/foodimages/dish20.png"
+        "image": "foodimages/dish20.png"
     }
  
 ]

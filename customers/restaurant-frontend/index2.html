@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Restaurant Ordering</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="icons/pngwing.com.png">
+
+</head>
+<body>
+    <div id="overlay" class="overlay">
+        <!-- Popup content -->
+        <div class="popup">
+            <p>Thank you for ordering</p><br>
+        </div>
+    </div>
+
+    <div id="emptyCartOverlay" class="overlay">
+        <!-- Popup content for empty cart -->
+        <div class="popup">
+            <p>Please choose items first</p><br>
+            <button class="close-btn" onclick="redirectToMenu()">Go to Menu</button>
+        </div>
+    </div>
+
+    <div id="invalidTimeOverlay" class="overlay">
+        <!-- Popup content for invalid order time -->
+        <div class="popup">
+            <p>Orders can only be placed between 9:00 AM and 10:00 PM</p><br>
+            <button class="close-btn" onclick="closeInvalidTimePopup()">OK</button>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <div class="logo">RestaurantName</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index1.html">Menu</a></li>
+                <li><a href="index2.html">Order Now</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Order Now Section -->
+    <section id="order" class="order-section">
+        <form action="#" class="order-form" onsubmit="handleSubmit(event)">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" name="name" required>
+            
+            <label for="email">Your Email</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="phone">Your Phone Number (India)</label>
+                <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" maxlength="10" required>
+
+            <label for="time">Pickup/Arrival Time<br> (Open between 9.00AM-10.00PM)</label>
+            <input type="datetime-local" id="time" name="time" required>
+            
+            <div id="cart">
+                <h3>Your Cart</h3>
+                <ul id="cart-items"></ul>
+                <p id="total-price">Total: ₹0.00</p>
+            </div>
+            
+            <button type="submit" class="btn">Confirm Order</button>
+        </form>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <h2>Contact Us</h2>
+        <p>Email: info@restaurantname.com</p>
+        <p>Phone: (123) 456-7890</p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 RestaurantName. All rights reserved.</p>
+    </footer>
+
+    <!-- Script -->
+    <script src="index2.js">
+ </script>
+</body>
+</html>

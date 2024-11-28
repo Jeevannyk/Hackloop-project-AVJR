@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Define the schema for an order
 const OrderSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true },
@@ -14,13 +13,8 @@ const OrderSchema = new mongoose.Schema({
         }
     ],
     totalPrice: { type: Number, required: true },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    status: { type: String, default: 'pending', enum: ['pending', 'served', 'canceled'] }
 });
 
-// Add a custom validator to prevent empty carts
-OrderSchema.path('items').validate(function (items) {
-    return items.length > 0; // Ensure that there is at least one item in the array
-}, 'A cart cannot be empty');
-
-// Export the model
 module.exports = mongoose.model('Order', OrderSchema);

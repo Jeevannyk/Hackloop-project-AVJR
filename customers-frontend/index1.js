@@ -13,7 +13,7 @@ async function loadMenu() {
         const menuData = await response.json();
 
         const menuGrid = document.querySelector('.menu-grid');
-        menuGrid.innerHTML = ''; // Clear existing menu items
+        menuGrid.innerHTML = ''; 
 
         menuData.forEach(item => {
             const menuItem = document.createElement('div');
@@ -60,7 +60,6 @@ let total = 0;
 function addToCart(itemName, itemPrice, itemQuantity) {
     itemQuantity = clampQuantity(parseInt(itemQuantity));
 
-    // Check if the item already exists in the cart
     const existingItemIndex = cart.findIndex(item => item.name === itemName);
 
     if (existingItemIndex === -1) {
@@ -185,38 +184,27 @@ function changeQuantity(itemName, change) {
     const currentQuantity = parseInt(quantityInput.value);
     const newQuantity = clampQuantity(currentQuantity + change);
 
-    // Update the quantity input field
     quantityInput.value = newQuantity;
-
-    // Trigger the floating animation if the quantity changes
     if (currentQuantity !== newQuantity) {
-        const button = event.target; // The button that was clicked
+        const button = event.target; 
         triggerFloatingNumber(button, change > 0 ? '+1' : '-1');
     }
 
-    // Update the cart item
     updateCartItem(itemName, newQuantity);
 }
 
-/** Function to create a floating number animation */
 function triggerFloatingNumber(button, text) {
-    // Get the button's position on the page
     const rect = button.getBoundingClientRect();
-
-    // Create the floating number element
     const floatingNumber = document.createElement('span');
     floatingNumber.classList.add('floating-number');
     floatingNumber.textContent = text;
 
-    // Position the floating number near the button
     floatingNumber.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
     floatingNumber.style.top = `${rect.top + window.scrollY}px`;
 
-    // Append the floating number to the body
     document.body.appendChild(floatingNumber);
 
-    // Remove the floating number after the animation ends
     setTimeout(() => {
         floatingNumber.remove();
-    }, 500); // Match the duration of the CSS animation
+    }, 500); 
 }

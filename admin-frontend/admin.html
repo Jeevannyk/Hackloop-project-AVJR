@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Orders</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+    <div id="orderManagement"><button id="logoutButton">Logout</button>
+        <h1>Orders</h1>
+
+        <button aria-label="View Today's Summary" onclick="showPopup()" class="btn">View orders details</button>
+        <button id="exportPdf" onclick="exportOrdersToPDF()" class="btn">Download Orders details</button>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+        <div id="overlay" onclick="hidePopup()"></div>
+        <div id="popup">
+            <div id="popup-header">
+                <input type="date" id="datePicker" />
+                <input type="month" id="monthPicker" />
+                <button onclick="showPopup()" class="btn">Show Summary</button>
+                <button id="exportPdf" onclick="generatePDFReport()" class="btn">Export as PDF</button>
+                <span id="popup-close" onclick="hidePopup()">×</span>
+            </div>
+            <div id="popup-content">
+                <p><strong>Selected Date:</strong> <span id="selectedDate">Today</span></p>
+                <p><strong>Total Orders:</strong> <span id="totalOrders">0</span></p>
+                <p><strong>Orders Served:</strong> <span id="servedOrders">0</span></p>
+                <p><strong>Orders Canceled:</strong> <span id="canceledOrders">0</span></p>
+                <p><strong>Total Earnings:</strong> ₹<span id="totalEarnings">0.00</span></p>
+                <p><strong>Items Served:</strong></p>
+                <ul id="servedItemsList"></ul>
+            </div>
+        </div>
+
+<div id="filter">
+    <div class="filter-group">
+        <label for="statusFilter">Filter by Status:</label>
+        <select id="statusFilter" onchange="filterOrders()">
+            <option value="all">All</option>
+            <option value="pending" selected>Pending</option>
+            <option value="served">Served</option>
+            <option value="canceled">Canceled</option>
+        </select>
+    </div>
+    <div class="search-group">
+        <label for="searchInput">Search:</label>
+        <input type="text" id="searchInput" placeholder="Search by name, email, or phone" onkeyup="searchOrders()">
+    </div>
+</div>
+
+
+
+        <table id="ordersTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Arrival Time</th>
+                    <th>Items</th>
+                    <th>Total Price</th>
+                    <th>Order Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+                <!-- Orders will be dynamically injected here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

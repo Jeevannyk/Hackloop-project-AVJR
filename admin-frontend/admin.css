@@ -1,0 +1,448 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.login-container {
+    width: 250px;
+    height: 350px;
+    margin: 100px auto;
+    padding: 20px;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    text-align: center;
+    background-color: #f8f9fa;
+    transition: box-shadow 0.3s ease, transform 0.2s ease; 
+}
+
+.login-container:hover { 
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.418);
+    transform: translateY(-2px); 
+}
+
+.loginhead {
+    font-size: xx-large;
+    text-align: center;
+    color: #000000; 
+    margin-top: 40px;
+}
+.LOGIN{
+    font-size: x-large;
+    text-align: center;
+    color: #000000;
+    margin: 0%; 
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; 
+}
+
+.label1{
+    margin-top: 15px;
+    width: 98%; 
+    text-align: left; 
+    color: #555;
+    margin-top: 30px; 
+    transition: transform 0.1s ease;
+}
+.label2 {
+    margin-top: 15px;
+    width: 98%; 
+    text-align: left; 
+    color: #555;
+    margin-top: 30px; 
+    transition: transform 0.1s ease;
+}
+
+input {
+    padding: 10px;
+    margin-top: 7px;
+    width: 95%; 
+    border: 1px solid #262525c5; 
+    border-radius: 25px; 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.414); 
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
+}
+
+input:hover {
+    border-color: #000;
+    transform: translateY(-1px); 
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); 
+}
+
+.loginbtn {
+    background-color: #ff6347; 
+    color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.414); 
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    padding: 10px 20px; 
+    margin-top: 45px; 
+    margin-bottom: 20px;
+    width: 100%; 
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.loginbtn:hover {
+    background-color: #ff7d32;
+    transform: translateY(-2px); 
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); 
+}
+
+#error-message {
+    color: red;
+    text-align: center;
+    margin-top: 10px; 
+}
+
+#logoutButton {
+    position: fixed; 
+    top: 10px; 
+    right: 10px; 
+    background-color: #af1e2c; 
+    color: white; 
+    margin-bottom: 10px;
+    font-size: 14px; 
+    font-weight: bold;
+    padding: 8px 16px; 
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 9999; 
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#logoutButton:hover {
+    background-color: #c82333; 
+    transform: translateY(-2px);
+
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    color: #555;
+    text-decoration-line: underline;
+}
+
+table {
+    width: 99%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table thead {
+    background-color: #ff6a00;
+    color: #fff;
+}
+
+table thead th {
+    padding: 10px;
+    text-align: left;
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+table tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+table td, table th {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.phone {
+    width: 4cm;
+    margin-right: 15px; 
+    vertical-align: middle; 
+}
+
+.date {
+    width: 3cm;
+    margin-right: 15px;
+    vertical-align: middle;
+}
+
+.items {
+    width: 5cm; 
+    vertical-align: middle;
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 10px;
+    margin: 10px;
+    background-color: transparent;
+}
+
+.order-status {
+    font-weight: bold;
+    margin-right: 10px; 
+}
+
+.button-container {
+    display: flex;
+    gap: 10px; 
+}
+
+button {
+    height: fit-content;
+    font-size: 14px;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn {
+    background-color: #ff7f50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px; 
+    cursor: pointer;
+    font-size: 14px; 
+    white-space: nowrap; 
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
+.btn:hover {
+    background-color: #ff7043; 
+    transform: translateY(-3px); 
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); 
+}
+
+.btn:active {
+    background-color: #e55347; 
+    transform: translateY(1px); 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+
+button.served {
+    background-color: #4CAF50;
+    color: white;
+    width: 3.5cm;
+}
+
+button.served:hover {
+    background-color: #45a049;
+}
+
+button.canceled {
+    background-color: #f44336;
+    color: white;
+    width: 3.5cm;
+}
+
+button.canceled:hover {
+    background-color: #e53935;
+}
+
+button.reset {
+    background-color: #ffa500;
+    color: white;
+}
+
+button.reset:hover {
+    background-color: #ff8c00;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px; 
+    justify-content: center; 
+    flex-wrap: wrap; 
+}
+
+#ordersTable td {
+    padding: 10px;
+}
+
+input[type="date"], input[type="month"] {
+    margin: 10px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+/* Filter and Search Styles */
+#filter {
+    width: 90%;
+    margin: 20px auto;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+}
+
+#filter .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+}
+
+#filter label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333; 
+    margin: 0; 
+    padding: 0;
+}
+
+#filter select,
+#searchInput {
+    padding: 8px 10px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    transition: border-color 0.3s ease;
+    background-color: #fff; 
+    margin: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); 
+}
+
+#filter select:hover,
+#searchInput:hover {
+    border-color: #aaa; 
+}
+
+#searchInput {
+    width: 300px; 
+}
+
+#filter .search-group {
+    margin-left: auto;
+}
+
+
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+#popup {
+    display: none;
+    position: fixed;
+    overflow-y: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    width: 80%; 
+    max-height: 80%; 
+    overflow-y: auto;
+    border-radius: 8px;
+    animation: fadeIn 0.5s ease;
+}
+
+#popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+#popup-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+#popup-close {
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    color: #555;
+    transition: color 0.5s ease;
+}
+
+#popup-close:hover {
+    color: #000;
+}
+
+#popup-content p {
+    margin: 10px 0;
+}
+
+#popup-content ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#popup-content ul li {
+    background: #f8f9fa;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 4px;
+}
+
+#popup input[type="date"],
+#popup input[type="month"] {
+    max-width: 150px; 
+    margin: 10px;
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); 
+    background-color: #f8f9fa; 
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+#viewDetailsButton {
+    display: flex;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #6c757d; 
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-align: center;
+}

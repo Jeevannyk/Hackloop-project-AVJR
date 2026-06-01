@@ -1,35 +1,52 @@
-let allOrders = [];
-let searchTimeout; 
-const { jsPDF } = window.jspdf;
-let isMessageShown = false;
-let hideMessageTimeout; 
-document.addEventListener('DOMContentLoaded', function() {
-     if (!localStorage.getItem('authToken')) { 
-        window.location.href = 'login.html'; }
-     }); document.getElementById('logoutButton')
-     .addEventListener('click', function() { 
-        localStorage.removeItem('authToken'); 
-        window.location.href = 'login.html';
-     });
+'use strict';
 
-async function fetchOrders() {
-    try {
-        const response = await fetch('http://localhost:5000/api/orders'); 
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        allOrders = data; 
-        console.log(data);  
-        filterOrders();
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-    }
+let allOrders      = [];
+let searchTimeout;
+const { jsPDF }    = window.jspdf;
+let isMessageShown = false;
+let hideMessageTimeout;
+
+// ── Session guard ─────────────────────────────────────────────────────────────
+function decodeAdminToken(token) {
+    try { return JSON.parse(atob(token.split('.')[1])); } catch { return null; }
+}
+function isAdminSessionValid(token) {
+    if (!token) return false;
+    const p = decodeAdminToken(token);
+    return p?.role === 'admin' && p.exp * 1000 > Date.now();
+}
+function adminHeaders() {
+    return { 'Content-Type': 'application/json', 'x-admin-token': localStorage.getItem('authToken') };
+}
+function handleAuthFailure() {
+    localStorage.removeItem('authToken');
+    window.location.href = 'login.html';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    fetchOrders(); 
+    if (!isAdminSessionValid(localStorage.getItem('authToken'))) {
+        handleAuthFailure();
+        return;
+    }
+    fetchOrders();
 });
+
+document.getElementById('logoutButton').addEventListener('click', handleAuthFailure);
+
+// ── Orders ────────────────────────────────────────────────────────────────────
+async function fetchOrders() {
+    try {
+        const response = await fetch(`${CONFIG.API_BASE}/api/orders`, {
+            headers: { 'x-admin-token': localStorage.getItem('authToken') },
+        });
+        if (response.status === 401) { handleAuthFailure(); return; }
+        if (!response.ok) throw new Error('Network error');
+        allOrders = await response.json();
+        filterOrders();
+    } catch (err) {
+        console.error('[admin] fetchOrders error:', err);
+    }
+}
 
 
 // Filter orders based on status and search query
@@ -124,7 +141,7 @@ function renderOrders(orders) {
         tableBody.appendChild(row);
     });
 }
-fetchOrders();
+
 // Function to render items
 function renderItems(items) {
     return items.map(item => `${item.name} (x${item.quantity})`).join(', ');
@@ -148,7 +165,7 @@ function renderActionButtons(order) {
 // Function to update the status of an order
 async function updateOrderStatus(orderId, newStatus) {
     try {
-        const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+        const response = await fetch(`${CONFIG.API_BASE}/api/orders/${orderId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -184,7 +201,7 @@ async function updateOrderStatus(orderId, newStatus) {
 // Function to reset the status of an order (Undo action)
 async function resetOrderStatus(orderId) {
     try {
-        const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+        const response = await fetch(`${CONFIG.API_BASE}/api/orders/${orderId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -509,9 +526,194 @@ function groupOrdersByDate(orders) {
 
 
 
-// Periodically refresh data
-setInterval(() => {
-    fetchOrders();
-}, 3000); 
+// Refresh every 30 seconds
+setInterval(fetchOrders, 30000);
 
-fetchOrders();
+// ═══════════════════════════════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+        btn.classList.add('tab-active');
+        document.getElementById(`tab-${btn.dataset.tab}`).classList.remove('hidden');
+        if (btn.dataset.tab === 'menu') loadMenu();
+    });
+});
+
+// ═══════════════════════════════════════════════════════
+//  MENU MANAGER
+// ═══════════════════════════════════════════════════════
+let selectedImageFile = null;
+
+async function loadMenu() {
+    const grid = document.getElementById('menuGrid');
+    grid.innerHTML = '<p class="menu-loading">Loading…</p>';
+    try {
+        const res  = await fetch(`${CONFIG.API_BASE}/api/menu`);
+        const items = await res.json();
+        document.getElementById('menuCount').textContent = `(${items.length})`;
+        grid.innerHTML = '';
+        if (items.length === 0) {
+            grid.innerHTML = '<p class="menu-loading">No items yet. Add one above.</p>';
+            return;
+        }
+        items.forEach(item => grid.appendChild(renderMenuCard(item)));
+    } catch (err) {
+        grid.innerHTML = '<p class="menu-loading" style="color:var(--red)">Failed to load menu.</p>';
+        console.error('[admin] loadMenu error:', err);
+    }
+}
+
+function renderMenuCard(item) {
+    const card = document.createElement('div');
+    card.className = 'menu-admin-card';
+    card.dataset.id = item._id;
+
+    const img = document.createElement('img');
+    // Seeded items have relative paths — prefix with customer frontend origin when needed
+    img.src = item.image.startsWith('http') ? item.image : `../customers-frontend/${item.image}`;
+    img.alt = item.name;
+    img.className = 'menu-admin-img';
+
+    const info = document.createElement('div');
+    info.className = 'menu-admin-info';
+
+    const name = document.createElement('p');
+    name.className = 'menu-admin-name';
+    name.textContent = item.name;
+
+    const desc = document.createElement('p');
+    desc.className = 'menu-admin-desc';
+    desc.textContent = item.description;
+
+    const price = document.createElement('p');
+    price.className = 'menu-admin-price';
+    price.textContent = `₹${item.price}`;
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'menu-del-btn';
+    delBtn.textContent = 'Remove';
+    delBtn.onclick = () => deleteMenuItem(item._id, card);
+
+    info.append(name, desc, price, delBtn);
+    card.append(img, info);
+    return card;
+}
+
+async function deleteMenuItem(id, cardEl) {
+    if (!confirm('Remove this item from the menu?')) return;
+    const token = localStorage.getItem('authToken');
+    try {
+        const res = await fetch(`${CONFIG.API_BASE}/api/menu/${id}`, {
+            method: 'DELETE',
+            headers: { 'x-admin-token': token },
+        });
+        if (!res.ok) throw new Error((await res.json()).message);
+        cardEl.style.transition = 'opacity 0.3s, transform 0.3s';
+        cardEl.style.opacity = '0';
+        cardEl.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            cardEl.remove();
+            const grid  = document.getElementById('menuGrid');
+            const count = grid.querySelectorAll('.menu-admin-card').length;
+            document.getElementById('menuCount').textContent = `(${count})`;
+            if (count === 0) grid.innerHTML = '<p class="menu-loading">No items. Add one above.</p>';
+        }, 300);
+    } catch (err) {
+        alert('Failed to remove item: ' + err.message);
+    }
+}
+
+// ── Drop zone / image preview ─────────────────────────────────────────────────
+const dropZone    = document.getElementById('dropZone');
+const imageInput  = document.getElementById('imageInput');
+const imgPreview  = document.getElementById('imgPreview');
+const placeholder = document.getElementById('dropPlaceholder');
+
+dropZone.addEventListener('click', () => imageInput.click());
+
+dropZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropZone.classList.add('drop-over');
+});
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drop-over'));
+dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drop-over');
+    const file = e.dataTransfer.files[0];
+    if (file) applyImagePreview(file);
+});
+
+imageInput.addEventListener('change', () => {
+    if (imageInput.files[0]) applyImagePreview(imageInput.files[0]);
+});
+
+function applyImagePreview(file) {
+    if (!file.type.startsWith('image/')) { alert('Please select an image file.'); return; }
+    selectedImageFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+        imgPreview.src = e.target.result;
+        imgPreview.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+}
+
+// ── Add item form submit ───────────────────────────────────────────────────────
+document.getElementById('addItemForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const statusEl = document.getElementById('addItemStatus');
+    const addBtn   = document.getElementById('addItemBtn');
+
+    if (!selectedImageFile) {
+        showAddStatus('Please add a food photo first.', 'error');
+        return;
+    }
+
+    const name  = document.getElementById('itemName').value.trim();
+    const price = document.getElementById('itemPrice').value.trim();
+    const desc  = document.getElementById('itemDesc').value.trim();
+
+    const formData = new FormData();
+    formData.append('image',       selectedImageFile);
+    formData.append('name',        name);
+    formData.append('price',       price);
+    formData.append('description', desc);
+
+    addBtn.disabled    = true;
+    addBtn.textContent = 'Adding…';
+    showAddStatus('', '');
+
+    try {
+        const token = localStorage.getItem('authToken');
+        const res   = await fetch(`${CONFIG.API_BASE}/api/menu`, {
+            method:  'POST',
+            headers: { 'x-admin-token': token },
+            body:    formData,
+        });
+        if (!res.ok) throw new Error((await res.json()).message);
+
+        showAddStatus('Dish added to the menu!', 'success');
+        e.target.reset();
+        selectedImageFile = null;
+        imgPreview.src = '';
+        imgPreview.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+        loadMenu();
+    } catch (err) {
+        showAddStatus('Failed: ' + err.message, 'error');
+    } finally {
+        addBtn.disabled    = false;
+        addBtn.textContent = 'Add to Menu';
+    }
+});
+
+function showAddStatus(msg, type) {
+    const el = document.getElementById('addItemStatus');
+    el.textContent = msg;
+    el.className   = `add-status ${type}`;
+    el.classList.toggle('hidden', !msg);
+}

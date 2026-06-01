@@ -1,0 +1,17 @@
+{
+  "name": "auth-frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "auth.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "qrcode": "^1.5.4",
+    "tailwindcss": "^4.3.0"
+  }
+}

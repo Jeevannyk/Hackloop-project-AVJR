@@ -1,55 +1,161 @@
-#Develop a website for restaurants where customers can preorder their meals online before arriving and order food online within the restaurant, making the dining experience faster and more convenient
-<h1> this is my team </h1>
-<pre>VAMSHAJ RAI
-JEEVAN
-RAVI SHASHI
-ADARSH H N
-</pre>
-<p>Overview<br>
-This project is a solution designed to minimize the time customers spend waiting for their meals in restaurants, especially during busy hours. By enabling customers to pre-order their meals online, the website streamlines the dining experience, making it faster, more convenient, and hassle-free.<br>
+# RestaurantName — Online Pre-Order System
 
-<br>The idea was inspired by our own experience of delays in our college canteen, where heavy crowds often made it impossible to get food in a short break. With this platform, restaurants can serve their customers more efficiently, while customers can enjoy their meals on time.<br>
+A full-stack restaurant pre-ordering web app that lets customers browse the menu, build a cart, and confirm an order before arriving — so the food is ready when they walk in.
 
-<br>Features<br>
-Online Pre-Ordering: Customers can browse the menu, select items, and place orders before arriving at the restaurant.<br>
-Customizable Menu: Restaurants can add, remove, or modify menu items as needed.<br>
-User-Friendly Interface: Simple and intuitive design for both customers and restaurant staff.<br>
+Built at **HackLoop** by team AVJR: Vamshaj Rai, Jeevan, Ravi Shashi, Adarsh H N.
 
+---
 
-<br>How It Works:<br>
+## Features
 
-<br>For Customers:<br>
-<br>Visit the website and browse the restaurant’s menu.<br>
-Add desired items to the cart .<br>
-Give your required information(name, email, phone number ,arrival/pickup time) and click on confirm order.<br>
-pickup/arrival time should be in between 9:00 AM to 10:00PM only.<br>
-Arrive to the restaurant at the said time.<br>
+### Customer Flow
+- Browse the full menu with live search
+- Add items to a persistent cart (survives page refresh via `localStorage`)
+- Confirm order with name, email, phone, and pickup/arrival time
+- Receive an email confirmation with a 5-digit order code via Mailgun
+- Optional: authenticate via QR code before ordering (auth gateway)
 
+### Admin Panel
+- Protected by server-side credential check (credentials stored in `.env`)
+- View all orders sorted by arrival time
+- Filter by status: Pending / Served / Canceled
+- Search by customer name, email, or phone
+- Mark orders as served or canceled, with an Undo button
+- View a daily/monthly summary popup (total orders, earnings, items served)
+- Export summary or full order list as PDF
 
-<br>For Restaurants:<br>
-Manage the menu via the admin panel.<br>
-Track customer orders in real time.<br>
-Update order status as meals are being prepared and completed.<br>
-Provide an efficient pickup or dine-in experience.<br>
+### Auth Gateway (optional)
+- QR-based passwordless login using RS256-signed JWTs
+- Session managed via WebSocket — no polling
+- Falls back to HS256 in local dev if `JWT_PRIVATE_KEY` is not set
 
-<br>Features<br>
-<ul>
-<li>A straightforward login form that prompts users for a username and password.</li>
-<li>Both fields are required, The fields are required, ensuring that users must enter both the username and password.</li>
-<li>The username is:”admin”</li>
-<li>Password:”password123”</li>
-<li>login button is provided for form submission.</li>
-On entering correct credentials, the user is redirected to the admin page (admin.html)</li>.
-</ul><br>
-<br>The admin page consists of all the details of orders made by customers.<br>
-The admin can filter the orders for pending,served and cancelled.<br>
-The admin page has a button which allows admin to either mark the order as served or cancelled ,and it comes with an undo button too.<br>
-The admin can also filter customers by searching their name,email,phone numbers which helps for easier access  of customers order.<br>
-There is a button through which admins can view the order details which will by default display total orders,orders served,orders cancelled,total earnings and items served of the selected date.(the report can also be exported as pdf)<br>
-There is also a button through which admins can download the order report in .pdf format which includes all the details of customers.<br>
+---
 
-<br>Tech Stacks used<br>
-Frontend: HTML, CSS, JavaScript<br>
-Backend: Node.js<br>
-Database: MongoDBAdmin Login System<br>
-</p>
+## Tech Stack
+
+| Layer | Tech |
+|---|---|
+| Frontend | HTML, CSS, JavaScript (vanilla) |
+| Backend | Node.js, Express |
+| Database | MongoDB (via Mongoose) |
+| Email | Mailgun |
+| Auth | JWT (RS256 / HS256 fallback), QR codes |
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+
+- MongoDB (local or Atlas)
+- A Mailgun account (for order confirmation emails)
+
+### 1. Clone the repo
+
+```bash
+git clone <repo-url>
+cd Hackloop-project-AVJR
+```
+
+### 2. Set up the restaurant backend
+
+```bash
+cd restaurant-backend
+cp .env.example .env
+# Fill in MONGO_URI and MAILGUN_* in .env, then generate the admin credentials:
+node scripts/setup-admin.js   # prompts for password, writes ADMIN_PASSWORD_HASH + ADMIN_JWT_SECRET
+npm install
+npm start
+```
+
+The server starts on `http://localhost:5000`.
+
+### 3. Set up the auth gateway (optional)
+
+```bash
+cd auth-gateway
+cp .env.example .env   # if one exists, or set vars manually
+npm install
+npm start
+```
+
+The auth gateway starts on `http://localhost:4000`.
+
+### 4. Open the frontend
+
+Use [VS Code Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) or any static file server:
+
+```
+customers-frontend/index.html   → customer-facing app
+admin-frontend/login.html       → admin panel
+auth-frontend/index.html        → QR login gateway
+```
+
+### 5. Configure API URLs (if not using localhost)
+
+Each frontend has a `config.js` — edit `API_BASE` / `AUTH_GATEWAY` to match your server:
+
+```js
+// customers-frontend/config.js
+const CONFIG = {
+  API_BASE: 'http://localhost:5000',
+};
+```
+
+---
+
+## Environment Variables
+
+Copy `restaurant-backend/.env.example` to `.env` and fill in:
+
+| Variable | Description |
+|---|---|
+| `MONGO_URI` | MongoDB connection string |
+| `MAILGUN_API_KEY` | Mailgun API key |
+| `MAILGUN_DOMAIN` | Mailgun sending domain |
+| `ADMIN_USERNAME` | Admin login username (default: `admin`) |
+| `ADMIN_PASSWORD_HASH` | bcrypt hash of the admin password — **never store plaintext**. Generate with `node scripts/setup-admin.js` |
+| `ADMIN_JWT_SECRET` | 32-byte hex secret for signing admin session JWTs. Also generated by `setup-admin.js` |
+| `CORS_ORIGIN` | Comma-separated allowed origins (e.g. `http://127.0.0.1:5500`) |
+| `PORT` | Server port (default: 5000) |
+
+**Never commit your `.env` file.** It is already listed in `.gitignore`.
+
+---
+
+## Ordering Hours
+
+Orders are accepted between **9:00 AM and 10:00 PM** only. The frontend validates this before submission; the backend trusts this constraint.
+
+---
+
+## Project Structure
+
+```
+Hackloop-project-AVJR/
+├── customers-frontend/     # Customer-facing pages (Home, Menu, Order)
+│   ├── config.js           # API base URL (edit for deployment)
+│   ├── styles.css
+│   ├── index.html          # Home
+│   ├── index1.html         # Menu
+│   ├── index2.html         # Order form
+│   ├── index1.js           # Menu + cart logic
+│   ├── index2.js           # Order submission
+│   └── menu.json           # Menu items
+├── admin-frontend/         # Admin order management panel
+│   ├── config.js
+│   ├── login.html
+│   ├── admin.html
+│   ├── admin.css
+│   ├── login.js
+│   └── admin.js
+├── auth-frontend/          # QR-based auth gateway UI
+│   ├── config.js
+│   ├── index.html
+│   └── auth.js
+├── auth-gateway/           # Auth gateway server (Node.js, JWT, WebSocket)
+└── restaurant-backend/     # Order API server (Express, MongoDB)
+    ├── .env.example
+    ├── server.js
+    └── models/Order.js
+```

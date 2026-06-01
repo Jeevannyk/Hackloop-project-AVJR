@@ -1,67 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Restaurant Ordering</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/jpg" href="logo-1.jpg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RestaurantName — Pre-Order Online</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="icons/pngwing.com.png">
 </head>
 <body>
-    <script>
-        // Function to show the popup
-        function showPopu() {
-            document.getElementById("overlay").style.display = "flex";
-        }
 
-        // Function to close the popup
-        function closePopu() {
-            document.getElementById("overlay").style.display = "none";
-        }
-    </script>
-    <!-- Navigation Bar -->
-    <header class="navbar">
-        <div class="logo">RestaurantName</div>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="index1.html">Menu</a></li>
-                <li><a href="#" onclick="showPopu()">Order Now</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <li> </li>
-            </ul>
-        </nav>
-        <div id="overlay" class="overlay">
-            <!-- Popup content -->
-            <div class="popup">
-                <p>Please go through the menu first </p><br>
-                <a href="index1.html">
-                <button class="close-btn" onclick="closePopu()">Go to menu</button>
-            </a>
-            </div>
-        </div>
-    
-    </header>
-   
-      
+  <script>
+    function showPopu()  { document.getElementById("overlay").style.display = "flex"; }
+    function closePopu() { document.getElementById("overlay").style.display = "none"; }
+  </script>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <h1>Welcome to RestaurantName</h1>
-        <p>Preorder your meal and enjoy a seamless dining experience.</p>
-        <a href="index1.html" class="close-btn">Explore Menu</a>
-    </section>
-    <!-- Contact Section -->
-    <section id="contact" class="contact-section">
-        <h2>Contact Us</h2>
-        <p>Email: info@restaurantname.com</p>
-        <p>Phone: (123) 456-7890</p>
-    </section>
+  <!-- Popup: must browse menu first -->
+  <div id="overlay" class="overlay">
+    <div class="popup">
+      <p>Please browse the menu<br>before placing an order.</p>
+      <a href="index1.html">
+        <button class="close-btn" onclick="closePopu()">Go to Menu</button>
+      </a>
+    </div>
+  </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2024 RestaurantName. All rights reserved.</p>
-    </footer>
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="logo">RestaurantName</div>
+    <nav id="main-nav">
+      <ul>
+        <li><a href="index.html" onclick="closeNav()">Home</a></li>
+        <li><a href="index1.html" onclick="closeNav()">Menu</a></li>
+        <li><a href="#" onclick="showPopu(); closeNav()">Order Now</a></li>
+        <li><a href="#contact" onclick="closeNav()">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('main-nav').classList.toggle('nav-open')">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+  <script>function closeNav(){document.getElementById('main-nav').classList.remove('nav-open');}</script>
+
+  <!-- Hero -->
+  <section id="home" class="hero">
+    <h1>Dine Before<br>You Arrive</h1>
+    <p>Pre-order from our full menu and have your meal ready the moment you walk in.</p>
+    <a href="index1.html" class="close-btn">Explore Menu</a>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="contact-section">
+    <h2>Get in Touch</h2>
+    <p>Email: info@restaurantname.com</p>
+    <p>Phone: (123) 456-7890</p>
+    <p>Open daily · 9:00 AM – 10:00 PM</p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2024 RestaurantName. All rights reserved.</p>
+  </footer>
+
 </body>
 </html>

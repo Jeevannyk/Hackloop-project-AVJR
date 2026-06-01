@@ -1,81 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Orders</title>
-    <link rel="stylesheet" href="admin.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders — RestaurantName Admin</title>
+  <link rel="stylesheet" href="admin.css">
 </head>
-
 <body>
 
-    <div id="orderManagement"><button id="logoutButton">Logout</button>
-        <h1>Orders</h1>
+  <div id="orderManagement">
 
-        <button aria-label="View Today's Summary" onclick="showPopup()" class="btn">View orders details</button>
-        <button id="exportPdf" onclick="exportOrdersToPDF()" class="btn">Download Orders details</button>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <header class="admin-header">
+      <span class="admin-wordmark">RestaurantName &middot; Admin</span>
+      <nav class="admin-tabs">
+        <button class="tab-btn tab-active" data-tab="orders">Orders</button>
+        <button class="tab-btn" data-tab="menu">Menu</button>
+      </nav>
+      <button id="logoutButton">Logout</button>
+    </header>
 
-        <div id="overlay" onclick="hidePopup()"></div>
-        <div id="popup">
-            <div id="popup-header">
-                <input type="date" id="datePicker" />
-                <input type="month" id="monthPicker" />
-                <button onclick="showPopup()" class="btn">Show Summary</button>
-                <button id="exportPdf" onclick="generatePDFReport()" class="btn">Export as PDF</button>
-                <span id="popup-close" onclick="hidePopup()">×</span>
-            </div>
-            <div id="popup-content">
-                <p><strong>Selected Date:</strong> <span id="selectedDate">Today</span></p>
-                <p><strong>Total Orders:</strong> <span id="totalOrders">0</span></p>
-                <p><strong>Orders Served:</strong> <span id="servedOrders">0</span></p>
-                <p><strong>Orders Canceled:</strong> <span id="canceledOrders">0</span></p>
-                <p><strong>Total Earnings:</strong> ₹<span id="totalEarnings">0.00</span></p>
-                <p><strong>Items Served:</strong></p>
-                <ul id="servedItemsList"></ul>
-            </div>
-        </div>
+    <!-- ── ORDERS TAB ──────────────────────────────────────────── -->
+    <div id="tab-orders" class="tab-panel">
 
-<div id="filter">
-    <div class="filter-group">
-        <label for="statusFilter">Filter by Status:</label>
+    <div class="tab-actions">
+      <button onclick="showPopup()" class="btn">View Summary</button>
+      <button id="exportPdf" onclick="exportOrdersToPDF()" class="btn">Download Report</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Modal backdrop -->
+    <div id="overlay" onclick="hidePopup()"></div>
+
+    <!-- Summary popup -->
+    <div id="popup">
+      <div id="popup-header">
+        <input type="date"  id="datePicker">
+        <input type="month" id="monthPicker">
+        <button onclick="showPopup()" class="btn">Show Summary</button>
+        <button onclick="generatePDFReport()" class="btn">Export PDF</button>
+        <span id="popup-close" onclick="hidePopup()">&times;</span>
+      </div>
+      <div id="popup-content">
+        <p><strong>Selected Date:</strong> <span id="selectedDate">Today</span></p>
+        <p><strong>Total Orders:</strong>   <span id="totalOrders">0</span></p>
+        <p><strong>Orders Served:</strong>  <span id="servedOrders">0</span></p>
+        <p><strong>Orders Canceled:</strong><span id="canceledOrders">0</span></p>
+        <p><strong>Total Earnings:</strong> ₹<span id="totalEarnings">0.00</span></p>
+        <p><strong>Items Served:</strong></p>
+        <ul id="servedItemsList"></ul>
+      </div>
+    </div>
+
+    <!-- Filter + search bar -->
+    <div id="filter">
+      <div class="filter-group">
+        <label for="statusFilter">Status:</label>
         <select id="statusFilter" onchange="filterOrders()">
-            <option value="all">All</option>
-            <option value="pending" selected>Pending</option>
-            <option value="served">Served</option>
-            <option value="canceled">Canceled</option>
+          <option value="all">All</option>
+          <option value="pending" selected>Pending</option>
+          <option value="served">Served</option>
+          <option value="canceled">Canceled</option>
         </select>
-    </div>
-    <div class="search-group">
+      </div>
+      <div class="search-group">
         <label for="searchInput">Search:</label>
-        <input type="text" id="searchInput" placeholder="Search by name, email, or phone" onkeyup="searchOrders()">
-    </div>
-</div>
-
-
-
-        <table id="ordersTable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Confirmation code</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Arrival Time</th>
-                    <th>Items</th>
-                    <th>Total Price</th>
-                    <th>Order Date</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="ordersTableBody">
-                <!-- Orders will be dynamically injected here -->
-            </tbody>
-        </table>
+        <input type="text" id="searchInput" placeholder="Name, email, or phone…" onkeyup="searchOrders()">
+      </div>
     </div>
 
-    <script src="auth.js"></script>
-    <script src="admin.js"></script>
+    <!-- Orders table -->
+    <table id="ordersTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Confirmation Code</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Arrival Time</th>
+          <th>Items</th>
+          <th>Total Price</th>
+          <th>Order Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="ordersTableBody">
+        <!-- dynamically populated -->
+      </tbody>
+    </table>
+
+    </div><!-- /tab-orders -->
+
+    <!-- ── MENU TAB ────────────────────────────────────────────── -->
+    <div id="tab-menu" class="tab-panel hidden">
+      <div class="menu-manager">
+
+        <!-- Add item form -->
+        <section class="menu-add-card">
+          <h2 class="menu-add-title">Add Dish</h2>
+
+          <div id="dropZone" class="drop-zone">
+            <img id="imgPreview" class="drop-preview hidden" src="" alt="Preview">
+            <div id="dropPlaceholder" class="drop-placeholder">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="28" height="22" rx="2"/>
+                <circle cx="10" cy="10" r="3"/>
+                <path d="M2 20l7-7 5 5 4-4 10 10"/>
+              </svg>
+              <p>Drag &amp; drop a food photo<br><span>or click to browse · Max 5 MB</span></p>
+            </div>
+            <input type="file" id="imageInput" accept="image/*" class="drop-input">
+          </div>
+
+          <form id="addItemForm" class="menu-add-form">
+            <div class="field-row">
+              <div class="field-group">
+                <label for="itemName">Dish Name</label>
+                <input id="itemName" type="text" placeholder="e.g. Butter Chicken" required>
+              </div>
+              <div class="field-group">
+                <label for="itemPrice">Price (₹)</label>
+                <input id="itemPrice" type="number" min="0" step="1" placeholder="149" required>
+              </div>
+            </div>
+            <div class="field-group">
+              <label for="itemDesc">Description</label>
+              <input id="itemDesc" type="text" placeholder="Short description of the dish" required>
+            </div>
+            <div id="addItemStatus" class="add-status hidden"></div>
+            <button type="submit" class="btn" id="addItemBtn">Add to Menu</button>
+          </form>
+        </section>
+
+        <!-- Current menu grid -->
+        <section class="menu-current">
+          <h2 class="menu-current-title">
+            Current Menu
+            <span id="menuCount" class="menu-count"></span>
+          </h2>
+          <div id="menuGrid" class="menu-admin-grid">
+            <p class="menu-loading">Loading menu…</p>
+          </div>
+        </section>
+
+      </div>
+    </div><!-- /tab-menu -->
+
+  </div><!-- /orderManagement -->
+
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="admin.js"></script>
 </body>
 </html>

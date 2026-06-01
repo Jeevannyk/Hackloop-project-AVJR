@@ -1,24 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="admin.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — RestaurantName</title>
+  <link rel="stylesheet" href="admin.css">
 </head>
-<body>
-    <h2 class="loginhead">LOGIN TO PROCEED</h2>
-    <div class="login-container">
-        <b><h3 class="LOGIN">Login</h3></b>
-        <form id="loginForm">
-            <label for="username" class="label1">Username:</label>
-            <input type="text" id="username" required>
-            <label for="password" class="label2">Password:</label>
-            <input type="password" id="password" required>
-            <button type="submit" class="loginbtn">Login</button>
-        </form>
-        <p id="error-message"></p>
-    </div>
-    <script src="login.js"></script>
+<body class="login-page">
+
+  <p class="login-eyebrow">Restaurant Management</p>
+  <p class="login-wordmark">RestaurantName</p>
+
+  <div class="login-container">
+    <h2 class="loginhead">Sign In</h2>
+    <p class="LOGIN">Admin Access</p>
+
+    <form id="loginForm">
+      <div>
+        <label for="username" class="label1">Username</label>
+        <input type="text" id="username" placeholder="Enter username" required>
+      </div>
+      <div>
+        <label for="password" class="label2">Password</label>
+        <input type="password" id="password" placeholder="Enter password" required>
+      </div>
+      <button type="submit" class="loginbtn">Sign In</button>
+    </form>
+
+    <p id="error-message"></p>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="login.js"></script>
 </body>
 </html>

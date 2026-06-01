@@ -6,6 +6,7 @@ const Order    = require('../models/Order');
 const MenuItem = require('../models/MenuItem');
 const { orderLimiter, adminOpsLimiter } = require('../middleware/rateLimiters');
 const { requireAdmin, validateObjectId, verifyCustomerToken } = require('../middleware/auth');
+const { validateOrder } = require('../middleware/validate');
 const { sendConfirmationEmail } = require('../services/email');
 
 // Mounted at /api so the customer endpoint can be singular (/api/order) while
@@ -51,16 +52,9 @@ router.patch('/orders/:id', requireAdmin, adminOpsLimiter, validateObjectId, asy
 });
 
 // POST /api/order — customer (soft auth). Places an order.
-router.post('/order', orderLimiter, verifyCustomerToken, async (req, res) => {
-    const { name, email, phone, arrivalTime, items } = req.body ?? {};
-
-    // ── Input presence checks ─────────────────────────────────────────────────
-    if (!name || !email || !phone || !arrivalTime) {
-        return res.status(400).json({ message: 'Name, email, phone, and arrival time are required' });
-    }
-    if (!Array.isArray(items) || items.length === 0) {
-        return res.status(400).json({ message: 'Cart cannot be empty' });
-    }
+// validateOrder runs before the handler: sanitizes text, validates email/phone/time.
+router.post('/order', orderLimiter, verifyCustomerToken, validateOrder, async (req, res) => {
+    const { name, email, phone, arrivalTime, items } = req.body;
 
     // ── Server-side price recomputation ───────────────────────────────────────
     // Client-submitted prices are NEVER trusted. Each item is looked up in the

@@ -9,6 +9,7 @@ const { config } = require('../config');
 const upload  = require('../middleware/upload');
 const { requireAdmin, validateObjectId } = require('../middleware/auth');
 const { menuReadLimiter, adminOpsLimiter } = require('../middleware/rateLimiters');
+const { validateMenuPost, validateUploadedImage } = require('../middleware/validate');
 
 const router = express.Router();
 
@@ -24,16 +25,14 @@ router.get('/', menuReadLimiter, async (_req, res) => {
 });
 
 // POST /api/menu — admin only. Creates an item with an uploaded image.
-router.post('/', requireAdmin, adminOpsLimiter, upload.single('image'), async (req, res) => {
-    const { name, description, price } = req.body;
-    if (!name || !description || !price || !req.file) {
-        if (req.file) fs.unlinkSync(req.file.path);
-        return res.status(400).json({ message: 'Name, description, price, and image are required' });
-    }
-    const parsedPrice = parseFloat(price);
-    if (isNaN(parsedPrice) || parsedPrice < 0) {
-        fs.unlinkSync(req.file.path);
-        return res.status(400).json({ message: 'Price must be a positive number' });
+// Chain: requireAdmin → rate limit → multer (save to disk) → text validation
+//        → magic-byte image check → route handler.
+router.post('/', requireAdmin, adminOpsLimiter, upload.single('image'), validateMenuPost, validateUploadedImage, async (req, res) => {
+    const { name, description } = req.body;
+    const parsedPrice = parseFloat(req.body.price);
+
+    if (!req.file) {
+        return res.status(400).json({ message: 'An image file is required' });
     }
     try {
         const imageUrl = `${config.publicBaseUrl}/uploads/${req.file.filename}`;

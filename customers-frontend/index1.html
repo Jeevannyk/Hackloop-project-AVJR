@@ -1,65 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Restaurant Ordering</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/jpg" href="logo-1.jpg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu — RestaurantName</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="icons/pngwing.com.png">
 </head>
 <body>
-    
-    <!-- Navigation Bar -->
-    <header class="navbar">
-        <div class="logo">RestaurantName</div>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li> 
-                <li><a href="index1.html">Menu</a></li>
-                <li><a href="#order" >Order Now</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
 
-    </header>
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="logo">RestaurantName</div>
+    <nav id="main-nav">
+      <ul>
+        <li><a href="index.html"  onclick="closeNav()">Home</a></li>
+        <li><a href="index1.html" onclick="closeNav()">Menu</a></li>
+        <li><a href="index2.html" onclick="closeNav()">Order Now</a></li>
+        <li><a href="#contact"    onclick="closeNav()">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('main-nav').classList.toggle('nav-open')">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+  <script>function closeNav(){document.getElementById('main-nav').classList.remove('nav-open');}</script>
 
-
-    <!-- Menu Section -->
-    <section id="menu" class="menu-section">
-        <h2>Our Menu</h2>
-        <input type="text" id="menu-search" placeholder="Search for a dish..." />
-        <div class="menu-grid">
-        </div><br>
-    </section>
-    
-
-    <div id="cart">
-        <h2>Your Cart</h2>
-        <ul id="cart-items"></ul>
-        <p id="total-price">Total: $0.00</p>
-    </div>
-    <section id="order">  
-        <div class="container" >
-              <a href="index2.html">
-              <button class="close-btn">Place order</button>
-              </a>
-          </div>
+  <!-- Menu Section -->
+  <section id="menu" class="menu-section">
+    <h2>Our Menu</h2>
+    <input type="text" id="menu-search" placeholder="Search dishes…">
+    <div class="menu-grid"></div>
   </section>
 
+  <!-- Cart -->
+  <div id="cart">
+    <h2>Your Cart</h2>
+    <ul id="cart-items"></ul>
+    <p id="total-price">Total: ₹0.00</p>
+  </div>
 
+  <!-- Place Order -->
+  <section id="order">
+    <div class="container">
+      <a href="index2.html">
+        <button class="close-btn">Place Order</button>
+      </a>
+    </div>
+  </section>
 
-    <!-- Contact Section -->
-   <section id="contact" class="contact-section">
-        <h2>Contact Us</h2>
-        <p>Email: info@restaurantname.com</p>
-        <p>Phone: (123) 456-7890</p>
-    </section>
+  <!-- Contact -->
+  <section id="contact" class="contact-section">
+    <h2>Get in Touch</h2>
+    <p>Email: info@restaurantname.com</p>
+    <p>Phone: (123) 456-7890</p>
+    <p>Open daily · 9:00 AM – 10:00 PM</p>
+  </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2024 RestaurantName. All rights reserved.</p>
-    </footer>
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2024 RestaurantName. All rights reserved.</p>
+  </footer>
+
+  <script src="index1.js"></script>
 </body>
-<script src="index1.js"></script>
 </html>

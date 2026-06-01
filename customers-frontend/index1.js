@@ -1,122 +1,170 @@
+'use strict';
+
 document.addEventListener('DOMContentLoaded', () => {
     loadMenu();
     loadCartFromStorage();
-
-    // Add event listener for the search bar
-    const searchInput = document.getElementById('menu-search');
-    searchInput.addEventListener('input', filterMenu);
+    document.getElementById('menu-search').addEventListener('input', filterMenu);
 });
+
+// ── Menu rendering ────────────────────────────────────────────────────────────
+
+// Builds a menu card using DOM APIs — no innerHTML interpolation, no XSS risk.
+function renderMenuItem(item) {
+    const el = document.createElement('div');
+    el.className = 'menu-item';
+
+    const img = document.createElement('img');
+    img.src = item.image;
+    img.alt = item.name;
+
+    const h3 = document.createElement('h3');
+    h3.textContent = item.name;
+
+    const desc = document.createElement('p');
+    desc.textContent = item.description;
+
+    const price = document.createElement('p');
+    price.className = 'price';
+    price.textContent = `₹${item.price}`;
+
+    const qtyWrap = document.createElement('div');
+    qtyWrap.className = 'quantity';
+
+    const btnMinus = document.createElement('button');
+    btnMinus.className = 'quantity-btn';
+    btnMinus.dataset.item = item.name;
+    btnMinus.dataset.change = '-1';
+    btnMinus.textContent = '-';
+
+    const qtyInput = document.createElement('input');
+    qtyInput.type = 'number';
+    qtyInput.id = `quantity-${item.name}`;
+    qtyInput.value = '1';
+    qtyInput.min = '1';
+    qtyInput.max = '20';
+
+    const btnPlus = document.createElement('button');
+    btnPlus.className = 'quantity-btn';
+    btnPlus.dataset.item = item.name;
+    btnPlus.dataset.change = '1';
+    btnPlus.textContent = '+';
+
+    qtyWrap.append(btnMinus, qtyInput, btnPlus);
+
+    const addBtn = document.createElement('button');
+    addBtn.className = 'button';
+    addBtn.dataset.item = item.name;
+    addBtn.dataset.price = item.price;
+    addBtn.textContent = 'Add to Cart';
+
+    el.append(img, h3, desc, price, qtyWrap, addBtn);
+    return el;
+}
 
 async function loadMenu() {
     try {
-        const response = await fetch('menu.json');
-        const menuData = await response.json();
-
-        const menuGrid = document.querySelector('.menu-grid');
-        menuGrid.innerHTML = ''; 
-
-        menuData.forEach(item => {
-            const menuItem = document.createElement('div');
-            menuItem.classList.add('menu-item');
-            menuItem.innerHTML = `
-                <img src="${item.image}" alt="${item.name}">
-                <h3>${item.name}</h3>
-                <p>${item.description}</p>
-                <p class="price">₹${item.price}</p>
-                <div class="quantity">
-                    <button class="quantity-btn" data-item="${item.name}" data-change="-1">-</button>
-                    <input type="number" id="quantity-${item.name}" value="1" min="1" max="20">
-                    <button class="quantity-btn" data-item="${item.name}" data-change="1">+</button>
-                </div><br>
-                <button class="button" data-item="${item.name}" data-price="${item.price}">Add to Cart</button>
-            `;
-            menuGrid.appendChild(menuItem);
-        });
-
-        // Save the full menu data globally for search functionality
+        const res = await fetch(`${CONFIG.API_BASE}/api/menu`);
+        const menuData = await res.json();
         window.fullMenuData = menuData;
 
-        // Attach event listeners for quantity and cart buttons
-        menuGrid.addEventListener('click', (event) => {
-            if (event.target.classList.contains('quantity-btn')) {
-                const itemName = event.target.dataset.item;
-                const change = parseInt(event.target.dataset.change, 10);
-                changeQuantity(itemName, change);
-            } else if (event.target.classList.contains('button')) {
-                const itemName = event.target.dataset.item;
-                const itemPrice = parseFloat(event.target.dataset.price);
-                const quantity = document.getElementById(`quantity-${itemName}`).value;
-                addToCart(itemName, itemPrice, quantity);
-            }
-        });
-    } catch (error) {
-        console.error('Error loading menu:', error);
+        const grid = document.querySelector('.menu-grid');
+        grid.innerHTML = '';
+        menuData.forEach(item => grid.appendChild(renderMenuItem(item)));
+
+        grid.addEventListener('click', handleMenuClick);
+    } catch (err) {
+        console.error('Error loading menu:', err);
     }
 }
 
-let cart = [];
+function filterMenu(event) {
+    const query = event.target.value.toLowerCase();
+    const grid = document.querySelector('.menu-grid');
+    const matches = window.fullMenuData.filter(item =>
+        item.name.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query)
+    );
+
+    grid.innerHTML = '';
+    if (matches.length > 0) {
+        matches.forEach(item => grid.appendChild(renderMenuItem(item)));
+    } else {
+        const msg = document.createElement('p');
+        msg.className = 'no-results';
+        msg.textContent = 'No items found. Try different keywords.';
+        grid.appendChild(msg);
+    }
+}
+
+// Single delegated click handler — no duplicate listener registration.
+function handleMenuClick(event) {
+    if (event.target.classList.contains('quantity-btn')) {
+        const itemName = event.target.dataset.item;
+        const change   = parseInt(event.target.dataset.change, 10);
+        changeQuantity(itemName, change, event.target);
+    } else if (event.target.classList.contains('button')) {
+        const itemName  = event.target.dataset.item;
+        const itemPrice = parseFloat(event.target.dataset.price);
+        const quantity  = document.getElementById(`quantity-${itemName}`).value;
+        addToCart(itemName, itemPrice, quantity);
+    }
+}
+
+// ── Quantity ──────────────────────────────────────────────────────────────────
+
+function changeQuantity(itemName, change, button) {
+    const input = document.getElementById(`quantity-${itemName}`);
+    const prev  = parseInt(input.value);
+    const next  = clampQuantity(prev + change);
+    input.value = next;
+    if (prev !== next) triggerFloatingNumber(button, change > 0 ? '+1' : '-1');
+    updateCartItem(itemName, next);
+}
+
+function clampQuantity(n) {
+    return Math.max(1, Math.min(20, n));
+}
+
+function triggerFloatingNumber(button, text) {
+    const rect = button.getBoundingClientRect();
+    const el   = document.createElement('span');
+    el.className = 'floating-number';
+    el.textContent = text;
+    el.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+    el.style.top  = `${rect.top  + window.scrollY}px`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 500);
+}
+
+// ── Cart ──────────────────────────────────────────────────────────────────────
+
+let cart  = [];
 let total = 0;
 
 function addToCart(itemName, itemPrice, itemQuantity) {
     itemQuantity = clampQuantity(parseInt(itemQuantity));
+    const existing = cart.findIndex(i => i.name === itemName);
 
-    const existingItemIndex = cart.findIndex(item => item.name === itemName);
-
-    if (existingItemIndex === -1) {
-        cart.push({
-            name: itemName,
-            price: itemPrice,
-            quantity: itemQuantity,
-            totalPrice: itemQuantity * itemPrice
-        });
+    if (existing === -1) {
+        cart.push({ name: itemName, price: itemPrice, quantity: itemQuantity, totalPrice: itemQuantity * itemPrice });
         total += itemQuantity * itemPrice;
         saveCartToStorage();
         displayCart();
     } else {
-        alert(`${itemQuantity} ${itemName} are added to cart.`);
-        setTimeout(() => {
-            document.getElementById('cart').scrollIntoView({ behavior: 'smooth' });
-        }, 0);
+        alert(`${itemName} is already in your cart.`);
+        setTimeout(() => document.getElementById('cart').scrollIntoView({ behavior: 'smooth' }), 0);
     }
-}
-
-function changeQuantity(itemName, change) {
-    const quantityInput = document.getElementById(`quantity-${itemName}`);
-    let newQuantity = clampQuantity(parseInt(quantityInput.value) + change);
-    quantityInput.value = newQuantity;
-    updateCartItem(itemName, newQuantity);
 }
 
 function updateCartItem(itemName, newQuantity) {
-    const itemIndex = cart.findIndex(item => item.name === itemName);
-
-    if (itemIndex !== -1) {
-        cart[itemIndex].quantity = newQuantity;
-        cart[itemIndex].totalPrice = newQuantity * cart[itemIndex].price;
-        total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+    const idx = cart.findIndex(i => i.name === itemName);
+    if (idx !== -1) {
+        cart[idx].quantity   = newQuantity;
+        cart[idx].totalPrice = newQuantity * cart[idx].price;
+        total = cart.reduce((sum, i) => sum + i.totalPrice, 0);
         saveCartToStorage();
         displayCart();
     }
-}
-
-function displayCart() {
-    const cartItemsElement = document.getElementById('cart-items');
-    cartItemsElement.innerHTML = '';
-
-    cart.forEach((item, index) => {
-        const listItem = document.createElement('li');
-        listItem.textContent = `${item.name} - ₹${item.price} x ${item.quantity} = ₹${item.totalPrice.toFixed(2)}`;
-
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'Remove';
-        removeButton.classList.add('button');
-        removeButton.onclick = () => removeFromCart(index);
-        
-        listItem.appendChild(removeButton);
-        cartItemsElement.appendChild(listItem);
-    });
-
-    document.getElementById('total-price').textContent = `Total: ₹${total.toFixed(2)}`;
 }
 
 function removeFromCart(index) {
@@ -126,85 +174,30 @@ function removeFromCart(index) {
     displayCart();
 }
 
-function clampQuantity(quantity) {
-    return Math.max(1, Math.min(20, quantity));
+function displayCart() {
+    const list = document.getElementById('cart-items');
+    list.innerHTML = '';
+    cart.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - ₹${item.price} × ${item.quantity} = ₹${item.totalPrice.toFixed(2)}`;
+        const btn = document.createElement('button');
+        btn.textContent = 'Remove';
+        btn.className = 'button';
+        btn.onclick = () => removeFromCart(index);
+        li.appendChild(btn);
+        list.appendChild(li);
+    });
+    document.getElementById('total-price').textContent = `Total: ₹${total.toFixed(2)}`;
 }
 
 function saveCartToStorage() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-    localStorage.setItem('total', total);
+    localStorage.setItem('cart',  JSON.stringify(cart));
+    localStorage.setItem('total', String(total));
 }
 
 function loadCartFromStorage() {
-    const savedCart = JSON.parse(localStorage.getItem('cart'));
+    const savedCart  = JSON.parse(localStorage.getItem('cart'));
     const savedTotal = parseFloat(localStorage.getItem('total'));
-
-    if (savedCart && savedTotal) {
-        cart = savedCart;
-        total = savedTotal;
-    }
+    if (savedCart && savedTotal) { cart = savedCart; total = savedTotal; }
     displayCart();
-}
-
-/** Filter the menu items based on search input */
-function filterMenu(event) {
-    const searchQuery = event.target.value.toLowerCase();
-    const menuGrid = document.querySelector('.menu-grid');
-
-    const filteredMenu = window.fullMenuData.filter(item =>
-        item.name.toLowerCase().includes(searchQuery) || 
-        item.description.toLowerCase().includes(searchQuery)
-    );
-
-    menuGrid.innerHTML = '';
-    if (filteredMenu.length > 0) {
-        filteredMenu.forEach(item => {
-            const menuItem = document.createElement('div');
-            menuItem.classList.add('menu-item');
-            menuItem.innerHTML = `
-                <img src="${item.image}" alt="${item.name}">
-                <h3>${item.name}</h3>
-                <p>${item.description}</p>
-                <p class="price">₹${item.price}</p>
-                <div class="quantity">
-                    <button class="quantity-btn" data-item="${item.name}" data-change="-1">-</button>
-                    <input type="number" id="quantity-${item.name}" value="1" min="1" max="20">
-                    <button class="quantity-btn" data-item="${item.name}" data-change="1">+</button>
-                </div><br>
-                <button class="button" data-item="${item.name}" data-price="${item.price}">Add to Cart</button>
-            `;
-            menuGrid.appendChild(menuItem);
-        });
-    } else {
-        menuGrid.innerHTML = `<p class="no-results">No items found. Try different keywords.</p>`;
-    }
-}
-function changeQuantity(itemName, change) {
-    const quantityInput = document.getElementById(`quantity-${itemName}`);
-    const currentQuantity = parseInt(quantityInput.value);
-    const newQuantity = clampQuantity(currentQuantity + change);
-
-    quantityInput.value = newQuantity;
-    if (currentQuantity !== newQuantity) {
-        const button = event.target; 
-        triggerFloatingNumber(button, change > 0 ? '+1' : '-1');
-    }
-
-    updateCartItem(itemName, newQuantity);
-}
-
-function triggerFloatingNumber(button, text) {
-    const rect = button.getBoundingClientRect();
-    const floatingNumber = document.createElement('span');
-    floatingNumber.classList.add('floating-number');
-    floatingNumber.textContent = text;
-
-    floatingNumber.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
-    floatingNumber.style.top = `${rect.top + window.scrollY}px`;
-
-    document.body.appendChild(floatingNumber);
-
-    setTimeout(() => {
-        floatingNumber.remove();
-    }, 500); 
 }

@@ -30,6 +30,11 @@ router.post('/login', loginSlowDown, loginLimiter, async (req, res) => {
     if (typeof username !== 'string' || typeof password !== 'string') {
         return res.status(400).json({ message: 'Invalid request' });
     }
+    // bcrypt silently truncates inputs > 72 bytes. A 1 GB password string would
+    // still run bcrypt and be slow. Reject early to prevent DoS via long inputs.
+    if (username.length > 64 || password.length > 128) {
+        return res.status(400).json({ message: 'Invalid request' });
+    }
 
     // Per-username lockout: catches distributed attacks where many IPs each
     // try a small number of passwords against the same account.

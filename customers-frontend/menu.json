@@ -14,7 +14,7 @@
     {
         "name": "Paneer Parota",
         "description": "Flaky paratha stuffed with paneer.",
-        "price": 99,
+        "price": 49,
         "image": "foodimages/dish3.png"
     },
     {
@@ -32,7 +32,7 @@
     {
         "name": "Chicken Biriyani",
         "description": "Aromatic rice with tender chicken.",
-        "price": 69,
+        "price": 199,
         "image": "foodimages/dish6.png"
     },   
     {

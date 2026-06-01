@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Environment secrets — never commit these
+.env
+.env.local
+.env.production
+
+# Auth gateway generated keys
+auth-gateway/.env
+
+# Build output
+dist/
+.next/
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Log files — contain IPs and auth events, never commit
+logs/
+*.log
+restaurant-backend/logs/
+
+# Uploaded food images — large binaries, deploy separately
+restaurant-backend/uploads/
+
+# Claude memory
+.claude/
+
+restaurant-backend/graphify-out/

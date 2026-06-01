@@ -5,7 +5,7 @@
         setTimeout(() => {
             closePopup();  
             window.location.href = "index.html";  
-        }, 2500);
+        }, 3000);
     }
 
     function closePopup() {
